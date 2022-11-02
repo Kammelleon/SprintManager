@@ -1,0 +1,18 @@
+@font-face {
+  font-family: "San Francisco Regular";
+  src: local('SFPRODISPLAYREGULAR'),
+       url('../fonts/SFPRODISPLAYREGULAR.OTF') format("opentype");
+}
+@font-face {
+  font-family: "San Francisco Bold";
+  src: local('SFPRODISPLAYBOLD'),
+       url('../fonts/SFPRODISPLAYBOLD.OTF') format("opentype");
+}
+@font-face {
+  font-family: "San Francisco Medium";
+  src: local('SFPRODISPLAYMEDIUM'),
+       url('../fonts/SFPRODISPLAYMEDIUM.OTF') format("opentype");
+}
+body{
+    margin:0;
+}

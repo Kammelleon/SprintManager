@@ -6,4 +6,22 @@
 {% endblock %}
 {% block content %}
     <h1>Dashboard</h1>
+    <button id="myBtn">Create task</button>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form method="POST">
+                {% csrf_token %}
+                {{ task_creation_form.as_p }}
+                <input type="submit" value="Add task">
+            </form>
+        </div>
+
+    </div>
+    <script src="{% static 'js/modal.js' %}"></script>
+
 {% endblock %}

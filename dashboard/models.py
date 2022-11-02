@@ -10,8 +10,8 @@ class TaskStatus(models.Model):
 
 class Task(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
-    status = models.OneToOneField(TaskStatus, on_delete=models.CASCADE)
-    planned_ords = models.FloatField()
-    storypoints = models.FloatField()
-    real_ords = models.FloatField()
+    description = models.TextField(blank=True, null=True)
+    status = models.OneToOneField(TaskStatus, on_delete=models.CASCADE, blank=True, null=True)
+    planned_ords = models.FloatField(blank=True, null=True)
+    storypoints = models.FloatField(blank=True, null=True)
+    real_ords = models.FloatField(blank=True, null=True)

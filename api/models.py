@@ -9,10 +9,12 @@ class TaskStatus(models.IntegerChoices):
 
 
 class Task(models.Model):
-    def __init__(self):
-        title = models.CharField(max_length=255)
-        description = models.TextField()
-        status = models.IntegerField(default=TaskStatus.TODO, choices=TaskStatus.choices)
-        planned_ords = models.FloatField()
-        real_ords = models.FloatField()
-        storypoints = models.FloatField()
+    title = models.CharField(max_length=255, default="")
+    description = models.TextField(default="")
+    status = models.IntegerField(default=TaskStatus.TODO, choices=TaskStatus.choices)
+    planned_ords = models.FloatField(blank=True, null=True)
+    real_ords = models.FloatField(blank=True, null=True)
+    storypoints = models.FloatField(blank=True, null=True)
+
+    def __str__(self):
+        return self.title

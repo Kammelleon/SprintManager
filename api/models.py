@@ -9,6 +9,7 @@ class TaskStatus(models.IntegerChoices):
 
 
 class Task(models.Model):
+
     title = models.CharField(max_length=255, default="")
     description = models.TextField(default="")
     status = models.IntegerField(default=TaskStatus.TODO, choices=TaskStatus.choices)

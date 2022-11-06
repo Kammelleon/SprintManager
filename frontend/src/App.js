@@ -54,13 +54,13 @@ assignTasks(){
                 // }, () => console.log("W SRODKU", this.state.todoTasks))
         for(let i=0; i < this.state.allTasks.length; i++){
             if(this.state.allTasks[i]["status"] === 0){
-                todoTasks.push(this.state.allTasks[i])
+                todoTasks.push({...this.state.allTasks[i]})
             }else if(this.state.allTasks[i]["status"] === 1){
-                inProgressTasks.push(this.state.allTasks[i])
+                inProgressTasks.push({...this.state.allTasks[i]})
             }else if(this.state.allTasks[i]["status"] === 2){
-                readyToVerifyTasks.push(this.state.allTasks[i])
+                readyToVerifyTasks.push({...this.state.allTasks[i]})
             }else if(this.state.allTasks[i]["status"] === 3){
-                doneTasks.push(this.state.allTasks[i])
+                doneTasks.push({...this.state.allTasks[i]})
             }
         }
         this.setState({
@@ -73,7 +73,6 @@ assignTasks(){
 
   fetchTasks(){
     console.log("Fetching...")
-
     fetch("http://127.0.0.1:8000/api/tasks-list/")
         .then(response => response.json())
         .then(data =>
@@ -88,17 +87,62 @@ assignTasks(){
 
         )
   }
+    drop = (e) => {
+          e.preventDefault();
+          const div_id = e.dataTransfer.getData("div_id");
+          var task_id = div_id.replace(/\D/g, "");
+          for(let i=0; i < this.state.allTasks.length; i++){
+              if(task_id === String(this.state.allTasks[i]["id"])){
+                  console.log("Znaleziono taska:",this.state.allTasks[i])
+                  var task_to_change = this.state.allTasks[i]
+              }
+          }
+          const block = document.getElementById(div_id);
+          let dropIndex = Array.from(e.target.children).findIndex(
+            (child) => child.getBoundingClientRect().bottom > e.clientY
+          );
+          if (dropIndex === -1) {
+            e.target.appendChild(block);
+          } else {
+            e.target.insertBefore(block, e.target.children[dropIndex]);
+          }
+          console.log("Target ID:", e.target.id)
+          var new_task_status = e.target.id.replace(/\D/g, "");
+          var url = `http://127.0.0.1:8000/api/task-update/${task_to_change["id"]}/`
+          console.log("Task to change before:", task_to_change)
+          task_to_change["status"] = Number(new_task_status)
+          console.log("Task to change after:", task_to_change)
+          var csrf_token = this.getCookie('csrftoken')
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-type':'application/json',
+              'X-CSRFToken': csrf_token
 
-  createCard(text){
-        console.log("Creating task")
-        return <div className="card mb-3 bg-light">
+            },
+            body: JSON.stringify(task_to_change)
+          })
+        };
+
+    dragOver1 = (e) => {
+          e.preventDefault();
+        };
+
+    dragStart = (e) => {
+          const target = e.target;
+          e.dataTransfer.setData("div_id", target.id);
+        };
+
+    dragOver = (e) => {
+          e.stopPropagation();
+        };
+
+  createCard(text, task_id){
+        var id_text = "task-id-"+String(task_id);
+        return <div id={id_text} className="card mb-3 bg-light" draggable
+                onDragStart={this.dragStart}
+                onDragOver={this.dragOver}>
             <div className="card-body p-3">
-                <div className="float-right mr-n2">
-                    <label className="custom-control custom-checkbox">
-                        <input type="checkbox" className="custom-control-input"/>
-                        <span className="custom-control-label"></span>
-                    </label>
-                </div>
                 <p>{text}</p>
                 <div className="float-right mt-n1">
                     <img src="https://bootdey.com/img/Content/avatar/avatar4.png" width="32"
@@ -107,6 +151,17 @@ assignTasks(){
                 <a className="btn btn-outline-primary btn-sm" href="#">View</a>
             </div>
         </div>
+  }
+  handleSubmit(e){
+        e.preventDefault()
+        var csrf_token = this.getCookie('csrftoken')
+        var url = 'http://127.0.0.1:8000/api/task-create/'
+  }
+  showTaskCreator(){
+        document.getElementById("overlay").style.display = "block";
+  }
+  hideTaskCreator(){
+        document.getElementById("overlay").style.display = "none";
   }
 
     render(){
@@ -125,15 +180,34 @@ assignTasks(){
                     <h1 className="h3 mb-3">Sprint Manager</h1>
 
                     <div className="row">
+                        <div id="overlay">
+                            <div className="mt-5 card card-border-primary text-center col-sm-6 mx-auto col-lg-3">
+                                <div id="task-creator">
+                                    <h4 className="task-creator-header">Create task</h4>
+                                    <hr/>
+                                    <p>Title</p>
+                                    <input type="text" placeholder="Title..."/>
+                                    <p>Description</p>
+                                    <textarea type="text" placeholder="Description..."></textarea>
+                                    <p>Planned ORDs</p>
+                                    <input type="number"/>
+                                    <p>Storypoints</p>
+                                    <input type="number"/>
+                                    <p>Real ORDs</p>
+                                    <input type="number"/>
+
+                                </div>
+                            </div>
+                        </div>
                         <div className="col-12 col-lg-6 col-xl-3">
                             <div className="card card-border-primary">
                                 <div className="card-header">
                                     <span className="h5 card-title">Todo</span>
-                                    <a href="#" className="btn btn-primary float-right">Add</a>
+                                    <button onClick={this.showTaskCreator} className="btn btn-primary float-right">Add</button>
                                 </div>
-                                <div className="card-body p-3">
+                                <div id="0-tasks" className="card-body p-3" onDrop={this.drop} onDragOver={this.dragOver1}>
                                     {todoTasks.map(function(task, i){
-                                        return self.createCard(task.title);
+                                        return self.createCard(task.title, task.id);
                                     })}
                                 </div>
                             </div>
@@ -144,9 +218,9 @@ assignTasks(){
                                     <span className="h5 card-title">In Progress</span>
                                     <a href="#" className="btn btn-primary float-right">Add</a>
                                 </div>
-                                <div className="card-body">
+                                <div id="1-tasks" className="card-body"  onDrop={this.drop} onDragOver={this.dragOver1}>
                                     {inProgressTasks.map(function(task, i){
-                                        return self.createCard(task.title);
+                                        return self.createCard(task.title, task.id);
                                     })}
                                 </div>
                             </div>
@@ -157,10 +231,10 @@ assignTasks(){
                                     <span className="h5 card-title">Ready to verify</span>
                                     <a href="#" className="btn btn-primary float-right">Add</a>
                                 </div>
-                                <div className="card-body">
+                                <div id="2-tasks" className="card-body" onDrop={this.drop} onDragOver={this.dragOver1}>
 
                                     {readyToVerifyTasks.map(function(task, i){
-                                        return self.createCard(task.title);
+                                        return self.createCard(task.title, task.id);
                                     })}
                                 </div>
                             </div>
@@ -171,9 +245,9 @@ assignTasks(){
                                     <span className="h5 card-title">Done</span>
                                     <a href="#" className="btn btn-primary float-right">Add</a>
                                 </div>
-                                <div className="card-body">
+                                <div id="3-tasks" className="card-body" onDrop={this.drop} onDragOver={this.dragOver1}>
                                     {doneTasks.map(function(task, i){
-                                        return self.createCard(task.title);
+                                        return self.createCard(task.title, task.id);
                                     })}
                                 </div>
                             </div>

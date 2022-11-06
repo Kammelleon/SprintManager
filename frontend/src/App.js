@@ -114,90 +114,67 @@ assignTasks(){
         var inProgressTasks = this.state.inProgressTasks
         var readyToVerifyTasks = this.state.readyToVerifyTasks
         var doneTasks = this.state.doneTasks
-
-        console.log(this.state.allTasks)
-        console.log(todoTasks)
-
         var self = this
-        return(
-            // <link rel="stylesheet">
 
+        return(
             <main className="content">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
                       integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
                       crossOrigin="anonymous"/>
-
                 <div className="container p-0">
-
                     <h1 className="h3 mb-3">Sprint Manager</h1>
 
                     <div className="row">
                         <div className="col-12 col-lg-6 col-xl-3">
                             <div className="card card-border-primary">
                                 <div className="card-header">
-                                    <h5 className="card-title">Todo</h5>
-                                    <h6 className="card-subtitle text-muted">Nam pretium turpis et arcu. Duis arcu
-                                        tortor.</h6>
+                                    <span className="h5 card-title">Todo</span>
+                                    <a href="#" className="btn btn-primary float-right">Add</a>
                                 </div>
                                 <div className="card-body p-3">
                                     {todoTasks.map(function(task, i){
                                         return self.createCard(task.title);
                                     })}
-
-                                    <a href="#" className="btn btn-primary btn-block">Add new</a>
-
                                 </div>
                             </div>
                         </div>
                         <div className="col-12 col-lg-6 col-xl-3">
                             <div className="card card-border-warning">
                                 <div className="card-header">
-                                    <h5 className="card-title">In Progress</h5>
-                                    <h6 className="card-subtitle text-muted">Nam pretium turpis et arcu. Duis arcu
-                                        tortor.</h6>
+                                    <span className="h5 card-title">In Progress</span>
+                                    <a href="#" className="btn btn-primary float-right">Add</a>
                                 </div>
                                 <div className="card-body">
-
                                     {inProgressTasks.map(function(task, i){
                                         return self.createCard(task.title);
                                     })}
-
-                                    <a href="#" className="btn btn-primary btn-block">Add new</a>
-
                                 </div>
                             </div>
                         </div>
                         <div className="col-12 col-lg-6 col-xl-3">
                             <div className="card card-border-danger">
                                 <div className="card-header">
-                                    <h5 className="card-title">Ready to verify</h5>
-                                    <h6 className="card-subtitle text-muted">Nam pretium turpis et arcu. Duis arcu
-                                        tortor.</h6>
+                                    <span className="h5 card-title">Ready to verify</span>
+                                    <a href="#" className="btn btn-primary float-right">Add</a>
                                 </div>
                                 <div className="card-body">
 
                                     {readyToVerifyTasks.map(function(task, i){
                                         return self.createCard(task.title);
                                     })}
-
-                                    <a href="#" className="btn btn-primary btn-block">Add new</a>
-
                                 </div>
                             </div>
                         </div>
                         <div className="col-12 col-lg-6 col-xl-3">
                             <div className="card card-border-success">
                                 <div className="card-header">
-
-                                    <h5 className="card-title">Done</h5>
-                                    <h6 className="card-subtitle text-muted">Nam pretium turpis et arcu. Duis arcu
-                                        tortor.</h6>
+                                    <span className="h5 card-title">Done</span>
+                                    <a href="#" className="btn btn-primary float-right">Add</a>
                                 </div>
                                 <div className="card-body">
                                     {doneTasks.map(function(task, i){
                                         return self.createCard(task.title);
                                     })}
-                                    <a href="#" className="btn btn-primary btn-block">Add new</a>
                                 </div>
                             </div>
                         </div>

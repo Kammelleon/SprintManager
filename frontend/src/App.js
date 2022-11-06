@@ -21,8 +21,10 @@ class App extends React.Component {
                 storypoints: null
             }
         }
+        this.lastClickedStatus = 0
         this.fetchTasks = this.fetchTasks.bind(this)
         this.getCookie = this.getCookie.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
   componentWillMount() {
     this.fetchTasks()
@@ -49,9 +51,7 @@ assignTasks(){
         let inProgressTasks = []
         let readyToVerifyTasks = []
         let doneTasks = []
-                //     this.setState({
-                //     todoTasks: [...this.state.todoTasks, this.state.allTasks[i]]
-                // }, () => console.log("W SRODKU", this.state.todoTasks))
+
         for(let i=0; i < this.state.allTasks.length; i++){
             if(this.state.allTasks[i]["status"] === 0){
                 todoTasks.push({...this.state.allTasks[i]})
@@ -106,12 +106,10 @@ assignTasks(){
           } else {
             e.target.insertBefore(block, e.target.children[dropIndex]);
           }
-          console.log("Target ID:", e.target.id)
-          var new_task_status = e.target.id.replace(/\D/g, "");
+
+          var new_task_status = Number(e.target.id.replace(/\D/g, ""));
           var url = `http://127.0.0.1:8000/api/task-update/${task_to_change["id"]}/`
-          console.log("Task to change before:", task_to_change)
-          task_to_change["status"] = Number(new_task_status)
-          console.log("Task to change after:", task_to_change)
+          task_to_change["status"] = new_task_status
           var csrf_token = this.getCookie('csrftoken')
           fetch(url, {
             method: 'POST',
@@ -137,7 +135,7 @@ assignTasks(){
           e.stopPropagation();
         };
 
-  createCard(text, task_id){
+  generateCards(text, task_id){
         var id_text = "task-id-"+String(task_id);
         return <div id={id_text} className="card mb-3 bg-light" draggable
                 onDragStart={this.dragStart}
@@ -154,10 +152,38 @@ assignTasks(){
   }
   handleSubmit(e){
         e.preventDefault()
+        var title = e.target[0].value
+        var description = e.target[1].value
+        var planned_ords = e.target[2].value
+        var storypoints = e.target[3].value
+        var real_ords = e.target[4].value
+        console.log(title, description, planned_ords, storypoints, real_ords)
         var csrf_token = this.getCookie('csrftoken')
+
         var url = 'http://127.0.0.1:8000/api/task-create/'
+        console.log("Creating...")
+        fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-type':'application/json',
+              'X-CSRFToken': csrf_token
+
+            },
+            body: JSON.stringify({
+                "title": title,
+                "description": description,
+                "status": this.lastClickedStatus,
+                "planned_ords": planned_ords,
+                "storypoints": storypoints,
+                "real_ords": real_ords
+            })
+          }).then((response) => {
+            this.fetchTasks()
+          })
+      document.getElementById("overlay").style.display = "none";
   }
-  showTaskCreator(){
+  showTaskCreator(taskStatus){
+        this.lastClickedStatus = taskStatus
         document.getElementById("overlay").style.display = "block";
   }
   hideTaskCreator(){
@@ -183,19 +209,26 @@ assignTasks(){
                         <div id="overlay">
                             <div className="mt-5 card card-border-primary text-center col-sm-6 mx-auto col-lg-3">
                                 <div id="task-creator">
-                                    <h4 className="task-creator-header">Create task</h4>
-                                    <hr/>
-                                    <p>Title</p>
-                                    <input type="text" placeholder="Title..."/>
-                                    <p>Description</p>
-                                    <textarea type="text" placeholder="Description..."></textarea>
-                                    <p>Planned ORDs</p>
-                                    <input type="number"/>
-                                    <p>Storypoints</p>
-                                    <input type="number"/>
-                                    <p>Real ORDs</p>
-                                    <input type="number"/>
-
+                                    <form method="POST" onSubmit={this.handleSubmit}>
+                                        <h3 className="task-creator-header">Create task</h3>
+                                        <hr/>
+                                        <p id="form-p">Title</p>
+                                        <input id="title-input" type="text" placeholder="Title..."/>
+                                        <p id="form-p" rows="3">Description</p>
+                                        <textarea placeholder="Description..."></textarea>
+                                        <p id="form-p">Planned ORDs</p>
+                                        <input style={{width:60}} placeholder="ORD" type="number" />
+                                        <p id="form-p">Storypoints</p>
+                                        <input style={{width:60}} placeholder="SP" type="number"/>
+                                        <p id="form-p">Real ORDs</p>
+                                        <input style={{width:60}} placeholder="ORD" type="number"/>
+                                        <br/>
+                                        <div id="task-creator-buttons">
+                                            <input className="btn btn-danger" style={{width:80}} onClick={this.hideTaskCreator} value="Cancel"/>
+                                            <span style={{marginLeft:10, marginRight:10}}></span>
+                                            <input className="btn btn-primary" type="submit" value="Create"/>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -203,11 +236,11 @@ assignTasks(){
                             <div className="card card-border-primary">
                                 <div className="card-header">
                                     <span className="h5 card-title">Todo</span>
-                                    <button onClick={this.showTaskCreator} className="btn btn-primary float-right">Add</button>
+                                    <button onClick={() => this.showTaskCreator(0)} className="btn btn-primary float-right">Add</button>
                                 </div>
                                 <div id="0-tasks" className="card-body p-3" onDrop={this.drop} onDragOver={this.dragOver1}>
                                     {todoTasks.map(function(task, i){
-                                        return self.createCard(task.title, task.id);
+                                        return self.generateCards(task.title, task.id);
                                     })}
                                 </div>
                             </div>
@@ -215,12 +248,12 @@ assignTasks(){
                         <div className="col-12 col-lg-6 col-xl-3">
                             <div className="card card-border-warning">
                                 <div className="card-header">
-                                    <span className="h5 card-title">In Progress</span>
-                                    <a href="#" className="btn btn-primary float-right">Add</a>
+                                    <span className="h5 card-title">In progress</span>
+                                    <button onClick={() => this.showTaskCreator(1)} className="btn btn-primary float-right">Add</button>
                                 </div>
                                 <div id="1-tasks" className="card-body"  onDrop={this.drop} onDragOver={this.dragOver1}>
                                     {inProgressTasks.map(function(task, i){
-                                        return self.createCard(task.title, task.id);
+                                        return self.generateCards(task.title, task.id);
                                     })}
                                 </div>
                             </div>
@@ -229,12 +262,12 @@ assignTasks(){
                             <div className="card card-border-danger">
                                 <div className="card-header">
                                     <span className="h5 card-title">Ready to verify</span>
-                                    <a href="#" className="btn btn-primary float-right">Add</a>
+                                    <button onClick={() => this.showTaskCreator(2)} className="btn btn-primary float-right">Add</button>
                                 </div>
                                 <div id="2-tasks" className="card-body" onDrop={this.drop} onDragOver={this.dragOver1}>
 
                                     {readyToVerifyTasks.map(function(task, i){
-                                        return self.createCard(task.title, task.id);
+                                        return self.generateCards(task.title, task.id);
                                     })}
                                 </div>
                             </div>
@@ -243,11 +276,11 @@ assignTasks(){
                             <div className="card card-border-success">
                                 <div className="card-header">
                                     <span className="h5 card-title">Done</span>
-                                    <a href="#" className="btn btn-primary float-right">Add</a>
+                                    <button onClick={() => this.showTaskCreator(3)} className="btn btn-primary float-right">Add</button>
                                 </div>
                                 <div id="3-tasks" className="card-body" onDrop={this.drop} onDragOver={this.dragOver1}>
                                     {doneTasks.map(function(task, i){
-                                        return self.createCard(task.title, task.id);
+                                        return self.generateCards(task.title, task.id);
                                     })}
                                 </div>
                             </div>

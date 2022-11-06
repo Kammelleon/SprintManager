@@ -1,3 +1,19 @@
+textarea{
+  width: 68%;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-size: 16px;
+  resize: none;
+}
+#title-input{
+  width:68%;
+}
+#task-creator-buttons{
+  margin-top:30px;
+  margin-bottom:20px;
+}
 #overlay {
   position: fixed; /* Sit on top of the page content */
   display: none; /* Hidden by default */
@@ -13,7 +29,12 @@
 }
 #task-creator{
   text-align: center;
+  border-radius: 5%;
 }
 .task-creator-header{
   margin-top:5%;
+}
+#form-p{
+  margin-top:1rem;
+  margin-bottom:0.3rem;
 }

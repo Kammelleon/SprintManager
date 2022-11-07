@@ -4,7 +4,7 @@ An app for sprint maintance strongly inspired by trello.com and Kanban boards. I
 # Todo
 - Task update functionality
 - Task delete functionality
-- Detali view
+- Detail view
 
 # Preview
 

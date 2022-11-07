@@ -8,4 +8,4 @@ An app for sprint maintance strongly inspired by trello.com and Kanban boards. I
 
 # Preview
 
-...
+![preview](https://github.com/Kammelleon/SprintManager/blob/main/preview_images/preview.PNG)

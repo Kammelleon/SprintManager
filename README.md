@@ -1,5 +1,5 @@
 # Sprint Manager
-An app for sprint maintance strongly inspired by trello.com and Kanban boards. It supports drag and drop operation.
+An app for sprint maintenance strongly inspired by trello.com and Kanban boards. It supports drag and drop operation.
 
 # Todo
 - Task update functionality
